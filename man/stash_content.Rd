@@ -4,7 +4,7 @@
 \alias{stash_content}
 \title{List all files/objects in a stash}
 \usage{
-stash_content(from = "", recursive)
+stash_content(from = "", recursive = FALSE)
 }
 \arguments{
 \item{from}{Path for where the object resides. Accepts a character

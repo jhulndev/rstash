@@ -6,7 +6,7 @@
 #'
 #' @return List of stash objects residing in the \code{from} stash
 #' @export
-stash_content <- function(from = '', recursive) {
+stash_content <- function(from = '', recursive = FALSE) {
 
   from <- as.stash(from)
   stash_match_(file.name = '.*', from, time.stamp = FALSE, uuid = FALSE,
