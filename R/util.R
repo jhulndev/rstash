@@ -178,8 +178,12 @@ as.stash <- function(x) {
 
 list.files.s3 <- function(bucket, dir = '', pattern = NULL, full.names = FALSE,
     recursive = FALSE) {
-  get.response <- get_bucket(bucket, prefix = dir)
-  dir.contents <- as.character(unlist(lapply(get.response, function(x) x$Key)))
+  ## Get bucket contents
+  get.response <- get_bucket(bucket, prefix = dir, parse_response = FALSE)
+  ## Read the content and strip namespaces
+  response.content <- xml_ns_strip(read_xml(get.response$content))
+  ## Extract keys
+  dir.contents <- xml_text(xml_find_all(response.content, '//Key'))
 
   if (!recursive) {
     is.recursive.dir <- dir != dirname(dir.contents)

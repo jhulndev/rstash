@@ -12,6 +12,8 @@ License: MIT + file LICENSE
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Imports:
-    aws.s3,
+    aws.s3 (>= 0.1.26),
     plyr,
-    uuid
+    uuid,
+    httr (>= 1.2.1),
+    xml2 (>= 1.0.0)
