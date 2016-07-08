@@ -5,7 +5,7 @@
 \title{List files/objects that match parameters from a local stash}
 \usage{
 \method{stash_match_}{local_stash}(file.name, from, time.stamp, uuid, extension,
-  compression)
+  compression, recursive)
 }
 \arguments{
 \item{file.name}{Base file name for the object}
@@ -24,6 +24,8 @@ matched.}
 \item{extension}{Extension for the file to load.}
 
 \item{compression}{Accepts NULL for no compression, or 'gz' for gzip.}
+
+\item{recursive}{Logical. Should the match recurse into directories?}
 }
 \value{
 List of stash objects that match parameters.

@@ -5,7 +5,7 @@
 #' @return List of stash objects that match parameters.
 #' @export
 stash_match_.s3_stash <- function(file.name, from, time.stamp, uuid,
-    extension, compression) {
+    extension, compression, recursive) {
 
   if (class(from) != 's3_stash') {
     stop('"from" directory needs to be an "s3_stash"')
@@ -16,7 +16,7 @@ stash_match_.s3_stash <- function(file.name, from, time.stamp, uuid,
   file.pattern <- generate_filepattern(file.name, time.stamp, uuid, extension,
       compression)
   file.matches <- list.files.s3(bucket, from, pattern = file.pattern,
-      full.names = TRUE)
+      full.names = TRUE, recursive = recursive)
 
   if (length(file.matches) == 0) {
     return(file.matches)

@@ -11,19 +11,21 @@
 #'    matched.
 #' @param extension Extension for the file to load.
 #' @param compression Accepts NULL for no compression, or 'gz' for gzip.
+#' @param recursive Logical. Should the match recurse into directories?
 #'
 #' @return List of stash objects that match parameters.
 #' @export
 stash_match <- function(file.name, from = '', time.stamp = FALSE, uuid = FALSE,
-    extension = NULL, compression = NULL) {
+    extension = NULL, compression = NULL, recursive = FALSE) {
 
   from <- as.stash(from)
-  stash_match_(file.name, from, time.stamp, uuid, extension, compression)
+  stash_match_(file.name, from, time.stamp, uuid, extension, compression,
+      recursive)
 }
 
 
 stash_match_ <- function(file.name, from, time.stamp, uuid, extension,
-    compression, checksum, read.fn, ...) {
+    compression, recursive) {
 
   UseMethod('stash_match_', from)
 }

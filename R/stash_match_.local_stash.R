@@ -5,7 +5,7 @@
 #' @return List of stash objects that match parameters.
 #' @export
 stash_match_.local_stash <- function(file.name, from, time.stamp, uuid,
-    extension, compression) {
+    extension, compression, recursive) {
 
   if (!is.character(from)) {
     stop('"from" directory is invalid')
@@ -14,7 +14,8 @@ stash_match_.local_stash <- function(file.name, from, time.stamp, uuid,
   from <- gsub('^$', '\\.', from)
   file.pattern <- generate_filepattern(file.name, time.stamp, uuid, extension,
       compression)
-  file.matches <- list.files(from, pattern = file.pattern, full.names = TRUE)
+  file.matches <- list.files(from, pattern = file.pattern, full.names = TRUE,
+    recursive = recursive)
 
   if (length(file.matches) == 0) {
     return(file.matches)

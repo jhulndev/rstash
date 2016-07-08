@@ -4,11 +4,13 @@
 \alias{stash_content}
 \title{List all files/objects in a stash}
 \usage{
-stash_content(from = "")
+stash_content(from = "", recursive)
 }
 \arguments{
 \item{from}{Path for where the object resides. Accepts a character
 string or *_stash object.}
+
+\item{recursive}{Logical. Should the contents recurse into directories?}
 }
 \value{
 List of stash objects residing in the \code{from} stash
