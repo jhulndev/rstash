@@ -71,6 +71,10 @@ generate_filename <- function(file.name, time.stamp = FALSE, uuid = FALSE,
     file.name <- paste(c(file.name, generate_timestamp(2)), collapse = '_')
   }
   if (isTRUE(uuid)) {
+    if (!requireNamespace('uuid', quietly = TRUE)) {
+      stop('"uuid" needed for this function to work. Please install it.',
+        call. = FALSE)
+    }
     file.name <- paste(c(file.name, uuid::UUIDgenerate(FALSE)), collapse = '_')
   }
 

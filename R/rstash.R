@@ -18,7 +18,6 @@
 #'
 #' @import plyr
 #' @import aws.s3
-#' @import uuid
 #' @import xml2
 #'
 #' @docType package
