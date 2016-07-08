@@ -1,0 +1,17 @@
+Package: rstash
+Type: Package
+Version: 0.1.0
+Title: File and Object Storage Abstraction
+Description: The purpose of this package is to abstract away where your data
+    is being stored, giving a consistent means of accessing and moving your
+    data whether it is on your local file system or in a cloud based object
+    storage system.
+Authors@R: person("Jason", "Huling", email = "tempemail@gmail.com",
+                  role = c("aut", "cre"))
+License: MIT + file LICENSE
+LazyData: TRUE
+RoxygenNote: 5.0.1
+Imports:
+    aws.s3,
+    plyr,
+    uuid
