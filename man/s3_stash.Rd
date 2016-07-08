@@ -2,19 +2,21 @@
 % Please edit documentation in R/rstash.R
 \name{s3_stash}
 \alias{s3_stash}
-\title{Title}
+\title{Object for representing an AWS S3 file or directory}
 \usage{
 s3_stash(bucket, path = "")
 }
 \arguments{
-\item{bucket}{s}
+\item{bucket}{AWS S3 bucket}
 
-\item{path}{s}
+\item{path}{A "file path" to a AWS S3 directory or file. S3 doesn't
+technically have folders/directories, but the object keys can be
+interpreted that way.}
 }
 \value{
-a
+A s3_stash object.
 }
 \description{
-Title
+Object for representing an AWS S3 file or directory
 }
 

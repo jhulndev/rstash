@@ -4,13 +4,25 @@
 \name{rstash}
 \alias{rstash}
 \alias{rstash-package}
-\title{rstash: A package for...}
+\title{rstash: A package for abstracting away where your data is being stored,
+   giving a consistent means of accessing and moving your data whether it is
+   on your local file system or in a cloud based object storage system.}
 \description{
-The foo package provides three categories of important functions:
-foo, bar and baz.
+The rstash package provides two main categories of functions:
+Data movement and Informational
 }
-\section{Foo functions}{
+\section{Data movement functions}{
 
-The foo functions ...
+save_stash
+get_stash
+delete_stash
+copy_stash
+move_stash
+}
+
+\section{Informational functions}{
+
+stash_match
+stash_content
 }
 

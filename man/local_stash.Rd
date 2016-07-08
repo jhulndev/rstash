@@ -2,17 +2,17 @@
 % Please edit documentation in R/rstash.R
 \name{local_stash}
 \alias{local_stash}
-\title{Title}
+\title{Object for representing a local file or directory}
 \usage{
 local_stash(path = "")
 }
 \arguments{
-\item{path}{s}
+\item{path}{A file path to a local directory or file.}
 }
 \value{
-s
+A local_stash object.
 }
 \description{
-Title
+Object for representing a local file or directory
 }
 
