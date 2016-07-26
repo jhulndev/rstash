@@ -4,17 +4,21 @@
 \alias{save_stash}
 \title{Save an object}
 \usage{
-save_stash(x, file.name, to = "", time.stamp = FALSE, uuid = FALSE,
-  extension = NULL, compression = NULL, checksum = FALSE,
-  save.fn = write.csv, ...)
+save_stash(x, to, save.fn = write.csv, ..., regen.file = TRUE,
+  cache.time.stamp = TRUE, cache.uuid = TRUE, simplify = TRUE)
 }
 \arguments{
 \item{x}{Object to save}
 
-\item{file.name}{Base file name for the saved object}
-
 \item{to}{Path for where the object will be saved. Accepts a character
 string or *_stash object.}
+
+\item{save.fn}{Any function where the first argument is the object and the
+second is the file path.}
+
+\item{...}{Arguments to pass to \code{save.fn}.}
+
+\item{file.name}{Base file name for the saved object}
 
 \item{time.stamp}{TRUE or FALSE. When TRUE, a time stamp will be appended to
 the \code{file.name}. It is recommended to use time.stamp OR uuid, not
@@ -29,11 +33,6 @@ both. Using both can cause the file name to become very long.}
 \item{compression}{Accepts NULL for no compression, or 'gz' for gzip.}
 
 \item{checksum}{Not being used right now.}
-
-\item{save.fn}{Any function where the first argument is the object and the
-second is the file path.}
-
-\item{...}{Arguments to pass to \code{save.fn}.}
 }
 \value{
 List of stash objects that were successfully saved.

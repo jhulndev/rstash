@@ -23,30 +23,160 @@
 #' @return List of stash objects that were successfully copied to their
 #'    destination.
 #' @export
-copy_stash <- function(file.name, from = '', to = '', time.stamp = FALSE,
-    uuid = FALSE, extension = NULL, compression = NULL, checksum = FALSE,
-    keep.from = TRUE, clean.up = TRUE) {
+copy_stash <- function(from, to, one.to = 'one', keep.from = TRUE, clean.up = TRUE,
+    simplify = TRUE) {
 
-  from <- as.stash(from)
-  to <- as.stash(to)
-  copy_stash_(file.name, from, to, time.stamp, uuid, extension, compression,
-      checksum, keep.from, clean.up)
+  from <- as.stash_file(from, simplify = FALSE)
+  from <- from[file_exists(from)]
+  to <- as.flat_list(to)
+
+  if (!one.to %in% c('one', 'many')) {
+    warning('one.to must be "one" or "many". Using default "one".')
+    one.to <- 'one'
+  }
+
+  if (one.to == 'one') {
+    to <- file_path(to, as.stash(from, .directory = ''), simplify = FALSE)
+
+  } else if (one.to == 'many') {
+    to <- llply(to, function(x)
+        file_path(x, as.stash(from, .directory = ''), simplify = FALSE))
+
+    is.multiple <- (length(to) %% length(from)) == 0
+    if (!is.multiple) {
+      stop('from and to lengths are incompatable')
+    }
+  }
+
+  to <- as.flat_list(to)
+  res <- mapply(copy_stash_, from = from, to = to,
+      MoreArgs = list(keep.from = keep.from, clean.up = clean.up),
+      SIMPLIFY = FALSE)
+
+  if (simplify && length(res) == 1) {
+    return(res[[1]])
+  }
+  return(res)
 }
 
-copy_stash_ <- function(file.name, from, to, time.stamp, uuid, extension,
-    compression, checksum, keep.from, clean.up) {
-
+copy_stash_ <- function(from, to, keep.from, clean.up) {
   UseMethod('copy_stash_', from)
 }
 
-copy_stash_.local_stash <- function(file.name, from, to, time.stamp, uuid,
-    extension, compression, checksum, keep.from, clean.up) {
-
+#' @export
+copy_stash_.local_stash <- function(from, to, keep.from, clean.up) {
   UseMethod('copy_stash_.local_stash', to)
 }
 
-copy_stash_.s3_stash <- function(file.name, from, to, time.stamp, uuid,
-    extension, compression, checksum, keep.from, clean.up) {
-
+#' @export
+copy_stash_.s3_stash <- function(from, to, keep.from, clean.up) {
   UseMethod('copy_stash_.s3_stash', to)
 }
+
+#' @export
+copy_stash_.local_stash.local_stash <- function(from, to, keep.from, clean.up) {
+
+  if (!dir_exists(to)) {
+    dir_create(to, recursive = TRUE)
+  }
+
+  if (isTRUE(keep.from)) {
+    results <- file.copy(from, to)
+
+  } else {
+    results <- file.rename(from, to)
+    if (isTRUE(clean.up)) {
+      clean_empty_dir(get_directory(from))
+    }
+  }
+  return(set_validation_message(to))
+}
+
+
+#' @export
+copy_stash_.local_stash.s3_stash <- function(from, to, keep.from, clean.up) {
+
+  put.response <- put_object_wrapper(from, to)
+
+  if (!isTRUE(keep.from)) {
+    unlink(from)
+    if (isTRUE(clean.up)) {
+      clean_empty_dir(get_directory(from))
+    }
+  }
+
+  return(set_validation_message(to))
+}
+
+
+#' @export
+copy_stash_.s3_stash.local_stash <- function(from, to, keep.from, clean.up) {
+
+  if (!dir_exists(to)) {
+    dir_create(to, recursive = TRUE)
+  }
+
+  from.args <- c(
+    object = get_filepath(from),
+    bucket = get_container(from),
+    key = attr(from, 'access.key.id'),
+    secret = attr(from, 'secret.access.key'),
+    region = attr(from, 'region')
+  )
+
+  save.args <- c(from.args, file = get_filepath(to))
+  save.args <- as.list(save.args)
+  save.args$parse_response <- FALSE
+  do.call(save_object, save.args)
+
+  if (!isTRUE(keep.from)) {
+    delete.args <- as.list(from.args)
+    do.call(delete_object, delete.args)
+  }
+
+  return(set_validation_message(to))
+}
+
+
+#' @export
+copy_stash_.s3_stash.s3_stash <- function(from, to, keep.from, clean.up) {
+
+  if (identical(get_container(from), get_container(to))) {
+    message('Moving temp file locally...')
+    ## Need to save the object to a temp file in order to load into s3
+    temp.stash <- local_stash(tempfile())
+    temp.file <- suppressMessages(
+      copy_stash(from = from, to = temp.stash, keep.from = keep.from))
+
+    results <- copy_stash(from = temp.file, to = to, keep.from = FALSE,
+        clean.up = TRUE)
+
+    return(results)
+  }
+
+  from.args <- c(
+    from_object = get_filepath(from),
+    from_bucket = get_container(from),
+    key = attr(from, 'access.key.id'),
+    secret = attr(from, 'secret.access.key'),
+    region = attr(from, 'region')
+  )
+
+  ## TODO: Check how to specify different credentials for to and from
+  to.args <- c(
+    to_object = get_filepath(to),
+    to_bucket = get_container(to)
+  )
+
+  copy.args <- c(from.args, to.args)
+  copy.args <- as.list(copy.args)
+  do.call(copy_object, copy.args)
+
+  if (!isTRUE(keep.from)) {
+    delete.args <- as.list(from.args)
+    do.call(delete_object, delete.args)
+  }
+
+  return(set_validation_message(to))
+}
+

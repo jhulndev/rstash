@@ -22,12 +22,8 @@
 #' @return List of stash objects that were successfully moved to their
 #'    destination.
 #' @export
-move_stash <- function(file.name, from = '', to = '', time.stamp = FALSE,
-    uuid = FALSE, extension = NULL, compression = NULL, checksum = FALSE,
-    clean.up = TRUE) {
-
-  from <- as.stash(from)
-  to <- as.stash(to)
-  copy_stash_(file.name, from, to, time.stamp, uuid, extension, compression,
-      checksum, keep.from = FALSE, clean.up)
+move_stash <- function(from, to, one.to = 'one', clean.up = TRUE,
+    simplify = TRUE) {
+  copy_stash(from = from, to = to, one.to = one.to, keep.from = FALSE,
+      clean.up = clean.up, simplify = simplify)
 }

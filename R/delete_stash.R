@@ -20,17 +20,81 @@
 #'
 #' @return List of stash objects that were successfully deleted.
 #' @export
-delete_stash <- function(file.name, from = '', time.stamp = FALSE, uuid = FALSE,
-    extension = NULL, compression = NULL, checksum = FALSE, no.prompt = FALSE,
-    clean.up = TRUE) {
+delete_stash <- function(from, no.prompt = FALSE, clean.up = TRUE,
+    simplify = TRUE) {
 
-  from <- as.stash(from)
-  delete_stash_(file.name, from, time.stamp, uuid, extension, compression,
-      checksum, no.prompt, clean.up)
+  from <- as.stash_file(from, simplify = FALSE)
+  is.file <- file_exists(from)
+  delete.from <- from[is.file]
+
+  from[!is.file] <- set_messages(from[!is.file], 'message',
+      'File does not exist')
+
+  if (!any(is.file)) {
+    message('No files found to delete.')
+    return(from)
+  }
+
+  if (!isTRUE(no.prompt)) {
+    message('Ready to delete the following files:\n  - ',
+        paste(get_filename(delete.from), collapse = '\n  - '))
+    confirmation <- readline(prompt = 'Are you sure you want to delete?: (y/n) ')
+    if (!tolower(confirmation) %in% c('yes', 'y')) {
+      stop('Deletion has been cancelled.')
+    }
+  }
+
+  res <- llply(delete.from, delete_stash_, clean.up = clean.up)
+  from[is.file] <- res
+
+  if (simplify && length(from) == 1) {
+    return(from[[1]])
+  }
+  return(from)
 }
 
-delete_stash_ <- function(file.name, from, time.stamp, uuid, extension,
-    compression, checksum, no.prompt, clean.up) {
-
-  UseMethod('delete_stash_', from)
+delete_stash_ <- function(from, clean.up) {
+  UseMethod('delete_stash_')
 }
+
+
+#' @export
+delete_stash_.local_stash <- function(from, clean.up) {
+
+  message('Deleting... ', from)
+  unlink(from, recursive = TRUE)
+
+  valid <- file_exists(from)
+  from[!valid] <- set_messages(from[!valid], 'message', 'File deleted')
+  from[valid] <- set_messages(from[valid], 'warning', 'File failed to delete')
+
+  if (isTRUE(clean.up) && !any(valid)) {
+    clean_empty_dir(get_directory(from))
+  }
+
+  return(from)
+}
+
+
+#' @export
+delete_stash_.s3_stash <- function(from, clean.up) {
+
+  from.args <- c(
+    object = get_filepath(from),
+    bucket = get_container(from),
+    key = attr(from, 'access.key.id'),
+    secret = attr(from, 'secret.access.key'),
+    region = attr(from, 'region')
+  )
+  from.args <- as.list(from.args)
+
+  message('Deleting... ', from)
+  do.call(delete_object, from.args)
+
+  valid <- file_exists(from)
+  from[!valid] <- set_messages(from[!valid], 'message', 'File deleted')
+  from[valid] <- set_messages(from[valid], 'warning', 'File failed to delete')
+
+  return(from)
+}
+
