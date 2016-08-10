@@ -32,6 +32,9 @@
 #' @param no.. Logical. Should both "." and ".." be excluded from non-recursive
 #'    listings? \strong{Not applicable when \code{x} is a \code{\link{ftp_stash}}
 #'    or \code{\link{s3_stash}}.}
+#' @param match.file Logical. If \code{TRUE} and \code{x} is a file stash, then
+#'    the file name pattern will be extracted and used for \code{pattern}. Not
+#'    applicable is \code{x} is not a stash object or is a directory.
 #' @param as.stash Logical. If \code{TRUE}, a list of stash objects will be
 #'    returned. If \code{FALSE}, a \code{character} vector is returned.
 #'
@@ -44,13 +47,14 @@
 #' @export
 list_files <- function(x = ".", pattern = NULL, all.files = FALSE,
     full.names = FALSE, recursive = FALSE, ignore.case = FALSE,
-    include.dirs = !recursive, no.. = FALSE, as.stash = TRUE, simplify = TRUE) {
+    include.dirs = !recursive, no.. = FALSE, match.file = TRUE,
+    as.stash = TRUE, simplify = TRUE) {
 
   x <- as.flat_list(x)
   res <- llply(x, list_files_, pattern = pattern, all.files = all.files,
       full.names = full.names, recursive = recursive,
       ignore.case = ignore.case, include.dirs = include.dirs, no.. = no..,
-      as.stash = as.stash)
+      match.file = match.file, as.stash = as.stash)
 
   if (simplify && length(res) == 1) {
     return(res[[1]])
@@ -61,7 +65,7 @@ list_files <- function(x = ".", pattern = NULL, all.files = FALSE,
 
 
 list_files_ <- function(x, pattern, all.files, full.names, recursive,
-    ignore.case, include.dirs, no.., as.stash) {
+    ignore.case, include.dirs, no.., match.file, as.stash) {
 
   UseMethod('list_files_')
 }
@@ -70,7 +74,7 @@ list_files_ <- function(x, pattern, all.files, full.names, recursive,
 
 #' @export
 list_files_.character <- function(x, pattern, all.files, full.names, recursive,
-    ignore.case, include.dirs, no.., as.stash) {
+    ignore.case, include.dirs, no.., match.file, as.stash) {
 
   if (as.stash) {
     full.names <- TRUE
@@ -90,7 +94,7 @@ list_files_.character <- function(x, pattern, all.files, full.names, recursive,
 
 #' @export
 list_files_.local_stash <- function(x, pattern, all.files, full.names, recursive,
-    ignore.case, include.dirs, no.., as.stash) {
+    ignore.case, include.dirs, no.., match.file, as.stash) {
 
   if (attr(x, 'type') != 'directory') {
     message('x is a file. The directory of x will be used instead.')
@@ -98,6 +102,10 @@ list_files_.local_stash <- function(x, pattern, all.files, full.names, recursive
 
   if (as.stash) {
     full.names <- TRUE
+  }
+
+  if (match.file && is.null(pattern)) {
+    pattern <- get_filepattern(x)
   }
 
   files <- list.files(path = get_directory(x), pattern = pattern, all.files = all.files,
@@ -114,7 +122,7 @@ list_files_.local_stash <- function(x, pattern, all.files, full.names, recursive
 
 #' @export
 list_files_.s3_stash <- function(x, pattern, all.files, full.names, recursive,
-    ignore.case, include.dirs, no.., as.stash) {
+    ignore.case, include.dirs, no.., match.file, as.stash) {
 
   ## TODO: Verify applicability of all.files (show hidden files if TRUE)
   ## TODO: Verify applicability of no..
@@ -166,10 +174,14 @@ list_files_.s3_stash <- function(x, pattern, all.files, full.names, recursive,
 
   dir.stashes <- file.stashes <- NULL
   if (length(dirs) > 0) {
-    dir.stashes <- as.s3_stash(x, path = dirs)
+    dir.stashes <- as.s3_stash(as.stash_dir(x), path = dirs,
+        time.stamp = 'auto', uuid = 'auto', extension = 'auto',
+        compression = 'auto')
   }
   if (length(files) > 0) {
-    file.stashes <- as.s3_stash(x, path = files, is.file = TRUE)
+    file.stashes <- as.s3_stash(as.stash_dir(x), path = files, is.file = TRUE,
+        time.stamp = 'auto', uuid = 'auto', extension = 'auto',
+        compression = 'auto')
   }
 
   if (include.dirs) {
@@ -179,6 +191,10 @@ list_files_.s3_stash <- function(x, pattern, all.files, full.names, recursive,
   }
 
   all.stashes <- flatten_list(all.stashes)
+
+  if (match.file && is.null(pattern)) {
+    pattern <- get_filepattern(x)
+  }
 
   if (!is.null(pattern) && !is.null(all.stashes)) {
     matches <- grepl(pattern = pattern, basename(as.character(all.stashes)),
@@ -206,7 +222,7 @@ list_files_.s3_stash <- function(x, pattern, all.files, full.names, recursive,
 
 #' @export
 list_files_.ftp_stash <- function(x, pattern, all.files, full.names, recursive,
-    ignore.case, include.dirs, no.., as.stash) {
+    ignore.case, include.dirs, no.., match.file, as.stash) {
 
   ## TODO: Verify applicability of all.files (show hidden files if TRUE)
   ## TODO: Verify applicability of no..
@@ -242,11 +258,14 @@ list_files_.ftp_stash <- function(x, pattern, all.files, full.names, recursive,
 
   dir.stashes <- file.stashes <- NULL
   if (length(dirs) > 0) {
-    dir.stashes <- as.ftp_stash(x, path = paste0(get_directory(x), dirs))
+    dir.stashes <- as.ftp_stash(as.stash_dir(x), path = paste0(get_directory(x),
+        dirs), time.stamp = 'auto', uuid = 'auto', extension = 'auto',
+        compression = 'auto')
   }
   if (length(files) > 0) {
-    file.stashes <- as.ftp_stash(x, path = paste0(get_directory(x), files),
-        is.file = TRUE)
+    file.stashes <- as.ftp_stash(as.stash_dir(x), path = paste0(get_directory(x),
+        files), is.file = TRUE, time.stamp = 'auto', uuid = 'auto',
+        extension = 'auto', compression = 'auto')
   }
 
   if (recursive && !is.null(dir.stashes)) {
@@ -264,6 +283,10 @@ list_files_.ftp_stash <- function(x, pattern, all.files, full.names, recursive,
   }
 
   all.stashes <- flatten_list(all.stashes)
+
+  if (match.file && is.null(pattern)) {
+    pattern <- get_filepattern(x)
+  }
 
   if (!is.null(pattern) && !is.null(all.stashes)) {
     matches <- grepl(pattern = pattern, basename(as.character(all.stashes)),

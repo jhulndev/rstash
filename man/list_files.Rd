@@ -6,8 +6,8 @@
 \usage{
 list_files(x = ".", pattern = NULL, all.files = FALSE,
   full.names = FALSE, recursive = FALSE, ignore.case = FALSE,
-  include.dirs = !recursive, no.. = FALSE, as.stash = TRUE,
-  simplify = TRUE)
+  include.dirs = !recursive, no.. = FALSE, match.file = TRUE,
+  as.stash = TRUE, simplify = TRUE)
 }
 \arguments{
 \item{x}{A \code{character} vector or a \code{\link{stash}}.}
@@ -40,6 +40,10 @@ names be included when \code{recursive = TRUE}, no effect when
 \item{no..}{Logical. Should both "." and ".." be excluded from non-recursive
 listings? \strong{Not applicable when \code{x} is a \code{\link{ftp_stash}}
 or \code{\link{s3_stash}}.}}
+
+\item{match.file}{Logical. If \code{TRUE} and \code{x} is a file stash, then
+the file name pattern will be extracted and used for \code{pattern}. Not
+applicable is \code{x} is not a stash object or is a directory.}
 
 \item{as.stash}{Logical. If \code{TRUE}, a list of stash objects will be
 returned. If \code{FALSE}, a \code{character} vector is returned.}
