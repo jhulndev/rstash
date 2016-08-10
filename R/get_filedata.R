@@ -1,7 +1,12 @@
 #' @export
-get_filedata <- function(x) {
+get_filedata <- function(x, simplify = TRUE) {
   x <- as.flat_list(x)
-  unlist(llply(x, get_filedata_))
+  res <- llply(x, get_filedata_)
+
+  if (simplify && length(res) == 1) {
+    return(res[[1]])
+  }
+  return(res)
 }
 
 

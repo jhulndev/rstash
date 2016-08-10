@@ -108,7 +108,7 @@ path_levels <- function(x, base.path = NULL, base.inclusive = FALSE) {
   seq_ids <- llply(seq_along(path), function(x) seq(from = 1, to = x))
   all.paths <- laply(seq_ids, function(x) paste0(path[x], collapse = sep))
 
-  if (is.null(base.path)) {
+  if (is.null(base.path) || base.path == '') {
     return(all.paths)
   }
   filter.start <- which(base.path == all.paths)

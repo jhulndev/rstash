@@ -1,7 +1,15 @@
 #' @export
-get_directory <- function(x) {
+get_directory <- function(x, simplify = TRUE, missing = NULL) {
   x <- as.flat_list(x)
-  unlist(llply(x, get_directory_))
+  res <- llply(x, get_directory_)
+
+  if (simplify && length(res) == 1) {
+    return(res[[1]])
+  } else if (simplify && length(res) > 1) {
+    res[laply(res, is.null)] <- missing
+    unlist(res)
+  }
+  return(res)
 }
 
 get_directory_ <- function(x) {

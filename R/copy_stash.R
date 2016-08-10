@@ -30,6 +30,11 @@ copy_stash <- function(from, to, one.to = 'one', keep.from = TRUE, clean.up = TR
   from <- from[file_exists(from)]
   to <- as.flat_list(to)
 
+  if (length(from) == 0) {
+    message('No files found to copy/move.')
+    return(NULL)
+  }
+
   if (!one.to %in% c('one', 'many')) {
     warning('one.to must be "one" or "many". Using default "one".')
     one.to <- 'one'

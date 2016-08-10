@@ -1,7 +1,15 @@
 #' @export
-get_path <- function(x) {
+get_path <- function(x, simplify = TRUE, missing = NULL) {
   x <- as.flat_list(x)
-  unlist(llply(x, get_path_))
+  res <- llply(x, get_path_)
+
+  if (simplify && length(res) == 1) {
+    return(res[[1]])
+  } else if (simplify && length(res) > 1) {
+    res[laply(res, is.null)] <- missing
+    unlist(res)
+  }
+  return(res)
 }
 
 get_path_ <- function(x) {

@@ -25,7 +25,7 @@ load_stash <- function(from, read.fn = read.csv, ...) {
   from <- from[file_exists(from)]
 
   if (length(from) == 0) {
-    message('No files found')
+    message('No files found to load.')
     return(NULL)
   }
 

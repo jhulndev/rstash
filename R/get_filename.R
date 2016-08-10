@@ -1,7 +1,15 @@
 #' @export
-get_filename <- function(x) {
+get_filename <- function(x, simplify = TRUE, missing = NULL) {
   x <- as.flat_list(x)
-  unlist(llply(x, get_filename_))
+  res <- llply(x, get_filename_)
+
+  if (simplify && length(res) == 1) {
+    return(res[[1]])
+  } else if (simplify && length(res) > 1) {
+    res[laply(res, is.null)] <- missing
+    unlist(res)
+  }
+  return(res)
 }
 
 get_filename_ <- function(x) {

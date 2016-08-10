@@ -30,7 +30,7 @@ delete_stash <- function(from, no.prompt = FALSE, clean.up = TRUE,
   from[!is.file] <- set_messages(from[!is.file], 'message',
       'File does not exist')
 
-  if (!any(is.file)) {
+  if (length(delete.from) == 0) {
     message('No files found to delete.')
     return(from)
   }

@@ -1,7 +1,15 @@
 #' @export
-get_compression <- function(x) {
+get_compression <- function(x, simplify = TRUE, missing = NULL) {
   x <- as.flat_list(x)
-  laply(x, get_compression_)
+  res <- llply(x, get_compression_)
+
+  if (simplify && length(res) == 1) {
+    return(res[[1]])
+  } else if (simplify && length(res) > 1) {
+    res[laply(res, is.null)] <- missing
+    unlist(res)
+  }
+  return(res)
 }
 
 get_compression_ <- function(x) {

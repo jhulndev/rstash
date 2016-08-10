@@ -1,7 +1,15 @@
 #' @export
-get_uuid <- function(x) {
+get_uuid <- function(x, simplify = TRUE, missing = NULL) {
   x <- as.flat_list(x)
-  unlist(llply(x, get_uuid_))
+  res <- llply(x, get_uuid_)
+
+  if (simplify && length(res) == 1) {
+    return(res[[1]])
+  } else if (simplify && length(res) > 1) {
+    res[laply(res, is.null)] <- missing
+    unlist(res)
+  }
+  return(res)
 }
 
 get_uuid_ <- function(x) {
