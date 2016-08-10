@@ -17,4 +17,5 @@ Imports:
     httr (>= 1.2.1),
     xml2 (>= 1.0.0)
 Suggests:
-    uuid
+    uuid,
+    testthat
