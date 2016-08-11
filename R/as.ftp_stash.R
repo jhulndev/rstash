@@ -24,18 +24,54 @@ as.ftp_stash_.character <- function(x, ...) {
 
 #' @export
 as.ftp_stash_.local_stash <- function(x, ...) {
-  new.args <- update_arguments(get_arguments(x), list(...), kFtpStashArgs)
+  .dots <- list(...)
+  new.args <- update_arguments(get_arguments(x), get_attributes(x), kFtpStashArgs)
+  new.args <- update_arguments(new.args, .dots, kFtpStashArgs)
+
+  if (is.null(.dots$path)) {
+    if (is.null(new.args$.file.name)) {
+      new.args$.file.name <- get_filename(x)
+    }
+    if (is.null(new.args$.directory)) {
+      new.args$.directory <- get_directory(x)
+    }
+  }
+
   do.call(ftp_stash, new.args)
 }
 
 #' @export
 as.ftp_stash_.s3_stash <- function(x, ...) {
-  new.args <- update_arguments(get_arguments(x), list(...), kFtpStashArgs)
+  .dots <- list(...)
+  new.args <- update_arguments(get_arguments(x), get_attributes(x), kFtpStashArgs)
+  new.args <- update_arguments(new.args, .dots, kFtpStashArgs)
+
+  if (is.null(.dots$path)) {
+    if (is.null(new.args$.file.name)) {
+      new.args$.file.name <- get_filename(x)
+    }
+    if (is.null(new.args$.directory)) {
+      new.args$.directory <- get_directory(x)
+    }
+  }
+
   do.call(ftp_stash, new.args)
 }
 
 #' @export
 as.ftp_stash_.ftp_stash <- function(x, ...) {
-  new.args <- update_arguments(get_arguments(x), list(...), kFtpStashArgs)
+  .dots <- list(...)
+  new.args <- update_arguments(get_arguments(x), get_attributes(x), kFtpStashArgs)
+  new.args <- update_arguments(new.args, .dots, kFtpStashArgs)
+
+  if (is.null(.dots$path)) {
+    if (is.null(new.args$.file.name)) {
+      new.args$.file.name <- get_filename(x)
+    }
+    if (is.null(new.args$.directory)) {
+      new.args$.directory <- get_directory(x)
+    }
+  }
+
   do.call(ftp_stash, new.args)
 }

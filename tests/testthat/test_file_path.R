@@ -43,17 +43,17 @@ test_that('1) file_path s3_stash dir and local_stash path where is.file = TRUE',
 
 test_that('2) file_path s3_stash dir and local_stash file where is.file = FALSE', {
   paths <- file_path(s3, local.base.ext.file)
-  expect_identical(get_directory(paths), 's3/test/data_dir')
+  expect_equal(get_directory(paths), 's3/test')
   expect_match(paths[[1]],
-    '^http://s3-test-region.amazonaws.com/s3-test-bucket/s3/test/data_dir/testing_data_D[0-9]{8}T[0-9]{8}.csv.gz$')
+    '^http://s3-test-region.amazonaws.com/s3-test-bucket/s3/test/testing_data_D[0-9]{8}T[0-9]{8}.csv.gz$')
 })
 
 
 test_that('3) file_path s3_stash dir and local_stash base file', {
   paths <- file_path(s3, local.base.ext)
-  expect_identical(get_directory(paths), 's3/test/data_dir')
+  expect_identical(get_directory(paths), 's3/test')
   expect_equal(paths[[1]],
-    'http://s3-test-region.amazonaws.com/s3-test-bucket/s3/test/data_dir')
+    'http://s3-test-region.amazonaws.com/s3-test-bucket/s3/test')
 })
 
 

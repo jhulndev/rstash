@@ -24,21 +24,21 @@ as.stash_.character <- function(x, ...) {
 
 #' @export
 as.stash_.local_stash <- function(x, ...) {
-  new.args <- update_arguments(get_arguments(x), list(...), kLocalStashArgs)
+  new.args <- list(...)
   new.args$x <- x
   do.call(as.local_stash, new.args)
 }
 
 #' @export
 as.stash_.ftp_stash <- function(x, ...) {
-  new.args <- update_arguments(get_arguments(x), list(...), kFtpStashArgs)
+  new.args <- list(...)
   new.args$x <- x
   do.call(as.ftp_stash, new.args)
 }
 
 #' @export
 as.stash_.s3_stash <- function(x, ...) {
-  new.args <- update_arguments(get_arguments(x), list(...), kS3StashArgs)
+  new.args <- list(...)
   new.args$x <- x
   do.call(as.s3_stash, new.args)
 }

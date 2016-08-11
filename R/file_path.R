@@ -53,9 +53,20 @@ convert_stash <- function(path, args, inherit.dir = NULL, inherit.file = TRUE) {
     return(stash.dir)
   }
 
-  file.args <- c(attrs$args['time.stamp'], attrs$args['uuid'],
-    attrs$args['extension'], attrs$args['compression'], attrs$args['base.file'],
-    attrs$args['is.file'])
+  if (is.null(attrs$file)) {
+    file.args <- c(attrs$args['time.stamp'], attrs$args['uuid'],
+      attrs$args['extension'], attrs$args['compression'], attrs$args['base.file'],
+      attrs$args['is.file'])
+
+  } else {
+    file.args <- list(time.stamp = attrs$time.stamp, uuid = attrs$uuid,
+      extension = attrs$extension, compression = attrs$compression,
+      base.file = attrs$base.file)
+
+    file.args$.file.name <- attrs$file
+    file.args$.directory <- dirname(get_directory(stash.dir))
+
+  }
 
   file.args$x <- stash.dir
   stash.file <- do.call(as.stash, file.args)

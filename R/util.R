@@ -115,6 +115,9 @@ path_levels <- function(x, base.path = NULL, base.inclusive = FALSE) {
   if (!base.inclusive) {
     filter.start <- filter.start + 1
   }
+  if (filter.start > length(all.paths)) {
+    return(NULL)
+  }
   return(all.paths[filter.start:length(all.paths)])
 }
 
