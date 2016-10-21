@@ -63,5 +63,8 @@ get_displaypath_.ftp_stash <- function(x) {
   if (directory == '') {
     directory <- NULL
   }
+  if (is.null(file)) {
+    file <- ''
+  }
   return(paste0(c('ftp:/', server, directory, file), collapse = '/'))
 }
