@@ -233,7 +233,7 @@ list_files_.ftp_stash <- function(x, pattern, all.files, full.names, recursive,
 
   ## NOTE: Expecting the following structure in the reponse for a line
   ## "drwxr-x---  2 user System            0 Jul 09  2015 File Name"
-  resonse.regx <- paste0(
+  response.regx <- paste0(
     '([a-z\\-]{10})\\s+',  # Permissions
     '([0-9])\\s+',         # Type, 1 = file, 2 = dir
     '([_a-zA-Z0-9]+)\\s+', # user?
@@ -249,8 +249,8 @@ list_files_.ftp_stash <- function(x, pattern, all.files, full.names, recursive,
   res.content <- httr::content(httr::GET(x, auth), as = 'text')
   parsed.res <- strsplit(res.content, split = '\n')[[1]]
 
-  is.dir <- gsub(resonse.regx, '\\2', parsed.res) == 2
-  dir.contents <- gsub(resonse.regx, '\\9', parsed.res)
+  is.dir <- gsub(response.regx, '\\2', parsed.res) == 2
+  dir.contents <- gsub(response.regx, '\\9', parsed.res)
 
   dirs <- dir.contents[is.dir]
   dirs <- dirs[!grepl('^\\.+$', dirs)]
@@ -258,14 +258,15 @@ list_files_.ftp_stash <- function(x, pattern, all.files, full.names, recursive,
 
   dir.stashes <- file.stashes <- NULL
   if (length(dirs) > 0) {
-    dir.stashes <- as.ftp_stash(as.stash_dir(x), path = paste0(get_directory(x),
-        dirs), time.stamp = 'auto', uuid = 'auto', extension = 'auto',
-        compression = 'auto')
+    dir.stashes <- as.ftp_stash(as.stash_dir(x),
+        path = paste(get_directory(x), dirs, sep = '/'), time.stamp = 'auto',
+        uuid = 'auto', extension = 'auto', compression = 'auto')
   }
   if (length(files) > 0) {
-    file.stashes <- as.ftp_stash(as.stash_dir(x), path = paste0(get_directory(x),
-        files), is.file = TRUE, time.stamp = 'auto', uuid = 'auto',
-        extension = 'auto', compression = 'auto')
+    file.stashes <- as.ftp_stash(as.stash_dir(x),
+        path = paste(get_directory(x), files, sep = '/'), is.file = TRUE,
+        time.stamp = 'auto', uuid = 'auto', extension = 'auto',
+        compression = 'auto')
   }
 
   if (recursive && !is.null(dir.stashes)) {
