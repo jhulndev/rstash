@@ -1,6 +1,6 @@
 Package: rstash
 Type: Package
-Version: 0.1.0.9001
+Version: 0.1.0.9002
 Title: File and Object Storage Abstraction
 Description: The purpose of this package is to abstract away where your data
     is being stored, giving a consistent means of accessing and moving your

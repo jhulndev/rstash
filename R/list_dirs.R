@@ -160,7 +160,7 @@ list_dirs_.ftp_stash <- function(x, full.names, recursive, as.stash) {
   auth <- httr::authenticate(user = attr(x, 'user'),
       password = attr(x, 'password'))
   res.content <- httr::content(httr::GET(x, auth), as = 'text')
-  parsed.res <- strsplit(res.content, split = '\n')[[1]]
+  parsed.res <- strsplit(res.content, split = '\r?\n')[[1]]
 
   is.dir <- gsub(resonse.regx, '\\2', parsed.res) == 2
   dir.contents <- gsub(resonse.regx, '\\9', parsed.res)

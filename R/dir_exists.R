@@ -54,7 +54,7 @@ dir_exists_.ftp_stash <- function(x) {
   if (is.na(res.content)) {
     return(FALSE)
   }
-  parsed.res <- strsplit(res.content, split = '\n')[[1]]
+  parsed.res <- strsplit(res.content, split = '\r?\n')[[1]]
 
   is.dir <- gsub(resonse.regx, '\\2', parsed.res) == 2
   dir.contents <- gsub(resonse.regx, '\\9', parsed.res)

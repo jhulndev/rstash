@@ -247,7 +247,7 @@ list_files_.ftp_stash <- function(x, pattern, all.files, full.names, recursive,
   auth <- httr::authenticate(user = attr(x, 'user'),
       password = attr(x, 'password'))
   res.content <- httr::content(httr::GET(x, auth), as = 'text')
-  parsed.res <- strsplit(res.content, split = '\n')[[1]]
+  parsed.res <- strsplit(res.content, split = '\r?\n')[[1]]
 
   is.dir <- gsub(response.regx, '\\2', parsed.res) == 2
   dir.contents <- gsub(response.regx, '\\9', parsed.res)
