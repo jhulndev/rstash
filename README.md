@@ -10,7 +10,7 @@ rstash still has a way to go before being released to CRAN, but you can install 
 if (packageVersion('devtools') < 1.6) {
   install.packages('devtools')
 }
-devtools::install_github('jason-huling/rstash')
+devtools::install_github('jhulndev/rstash')
 ```
 
 This package depends on [cloudyr/aws.s3](https://github.com/cloudyr/aws.s3) which is not available on CRAN at this time, but can be installed through the following:
